@@ -81,11 +81,21 @@ def get_rooms():
 @app.route('/api/rooms', methods=['POST'])
 def create_room():
     """Create a new room"""
+    logger.info("Create room API called")
     if controller is None:
+        logger.error("Controller not initialized")
         return jsonify({'success': False, 'error': 'Controller not initialized yet'})
+    
     data = request.json
-    result = controller.create_room(data)
-    return jsonify(result)
+    logger.info(f"Room data received: {data}")
+    
+    try:
+        result = controller.create_room(data)
+        logger.info(f"Room creation result: {result}")
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Error creating room: {e}")
+        return jsonify({'success': False, 'error': str(e)})
 
 @app.route('/api/rooms/<room_id>', methods=['PUT'])
 def update_room(room_id):

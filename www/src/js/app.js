@@ -397,9 +397,13 @@ function updateManualControlOptions() {
 
 // Save room
 async function saveRoom() {
+    console.log('saveRoom function called');
+    
     const name = document.getElementById('roomName').value;
     const type = document.getElementById('roomType').value;
     const description = document.getElementById('roomDescription').value;
+
+    console.log('Form values:', { name, type, description });
 
     if (!name) {
         showAlert('Please enter a room name', 'warning');
@@ -407,6 +411,7 @@ async function saveRoom() {
     }
 
     try {
+        console.log('Sending request to /api/rooms');
         const response = await fetch('/api/rooms', {
             method: 'POST',
             headers: {
@@ -419,7 +424,10 @@ async function saveRoom() {
             })
         });
 
+        console.log('Response status:', response.status);
         const result = await response.json();
+        console.log('Response result:', result);
+        
         if (result.success) {
             showAlert('Room created successfully', 'success');
             document.getElementById('roomForm').reset();

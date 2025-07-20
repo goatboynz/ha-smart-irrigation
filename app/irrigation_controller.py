@@ -56,11 +56,19 @@ class IrrigationController:
     def save_config(self):
         """Save configuration to file"""
         try:
-            os.makedirs(os.path.dirname(self.config_file), exist_ok=True)
+            config_dir = os.path.dirname(self.config_file)
+            logger.info(f"Saving config to: {self.config_file}")
+            logger.info(f"Config directory: {config_dir}")
+            
+            os.makedirs(config_dir, exist_ok=True)
+            
             with open(self.config_file, 'w') as f:
                 json.dump(self.config, f, indent=2)
+            
+            logger.info("Config saved successfully")
         except Exception as e:
             logger.error(f"Error saving config: {e}")
+            raise
     
     def get_rooms(self) -> List[Dict]:
         """Get all configured rooms"""
@@ -68,21 +76,31 @@ class IrrigationController:
     
     def create_room(self, room_data: Dict) -> Dict:
         """Create a new room"""
-        room_id = str(uuid.uuid4())
-        room = {
-            'id': room_id,
-            'name': room_data['name'],
-            'type': room_data.get('type', 'vegetative'),  # vegetative or flowering
-            'description': room_data.get('description', ''),
-            'zones': [],
-            'created_at': datetime.now().isoformat()
-        }
+        logger.info(f"Creating room with data: {room_data}")
         
-        self.config['rooms'][room_id] = room
-        self.save_config()
-        
-        logger.info(f"Created room: {room['name']}")
-        return {'success': True, 'room': room}
+        try:
+            room_id = str(uuid.uuid4())
+            room = {
+                'id': room_id,
+                'name': room_data['name'],
+                'type': room_data.get('type', 'vegetative'),  # vegetative or flowering
+                'description': room_data.get('description', ''),
+                'zones': [],
+                'created_at': datetime.now().isoformat()
+            }
+            
+            logger.info(f"Room object created: {room}")
+            
+            self.config['rooms'][room_id] = room
+            logger.info(f"Room added to config. Total rooms: {len(self.config['rooms'])}")
+            
+            self.save_config()
+            
+            logger.info(f"Created room: {room['name']}")
+            return {'success': True, 'room': room}
+        except Exception as e:
+            logger.error(f"Error in create_room: {e}")
+            return {'success': False, 'error': str(e)}
     
     def update_room(self, room_id: str, room_data: Dict) -> Dict:
         """Update room configuration"""

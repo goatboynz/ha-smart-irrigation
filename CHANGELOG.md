@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.9] - 2025-01-21
+
+### Fixed
+- Added comprehensive debugging for "Add New Room" functionality
+- Enhanced error handling in create_room API endpoint
+- Added detailed logging for room creation process
+- Improved config file saving with better error reporting
+- Added client-side debugging for form submission
+
+### Debug Enhancements
+- Added console logging to saveRoom JavaScript function
+- Enhanced server-side logging for room creation API
+- Added error handling and logging to irrigation controller
+- Improved config directory creation and file saving
+- Better error messages for troubleshooting
+
 ## [1.0.8] - 2025-01-21
 
 ### Fixed

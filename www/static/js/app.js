@@ -7,6 +7,7 @@ const socket = io();
 let rooms = [];
 let zones = [];
 let schedules = [];
+let entities = [];
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -50,7 +51,8 @@ async function loadData() {
             loadRooms(),
             loadZones(),
             loadSchedules(),
-            loadStatus()
+            loadStatus(),
+            loadEntities()
         ]);
         updateManualControlOptions();
     } catch (error) {
@@ -102,8 +104,35 @@ async function loadStatus() {
         const response = await fetch('/api/status');
         const status = await response.json();
         updateStatusDisplay(status);
+        
+        // Also load detailed stats
+        await loadDetailedStats();
     } catch (error) {
         console.error('Error loading status:', error);
+    }
+}
+
+// Load detailed statistics
+async function loadDetailedStats() {
+    try {
+        const response = await fetch('/api/stats');
+        const stats = await response.json();
+        updateDetailedStatsDisplay(stats);
+    } catch (error) {
+        console.error('Error loading detailed stats:', error);
+    }
+}
+
+// Load Home Assistant entities
+async function loadEntities() {
+    try {
+        const response = await fetch('/api/entities');
+        const data = await response.json();
+        entities = data.switches || [];
+        updateEntitySelects();
+    } catch (error) {
+        console.error('Error loading entities:', error);
+        entities = [];
     }
 }
 
@@ -258,6 +287,78 @@ function updateStatusCards() {
     document.getElementById('total-zones').textContent = zones.length;
 }
 
+// Update detailed stats display
+function updateDetailedStatsDisplay(stats) {
+    const container = document.getElementById('detailed-stats');
+    
+    if (!stats.rooms || stats.rooms.length === 0) {
+        container.innerHTML = '<p class="text-muted">No statistics available yet</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <div class="row mb-3">
+            <div class="col-12">
+                <h6 class="text-primary">Total Water Used Today: ${stats.total_water_today.toFixed(2)}L</h6>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <h6><i class="fas fa-home me-1"></i>By Room</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Room</th>
+                                <th>Type</th>
+                                <th>Plants</th>
+                                <th>Water Used</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${stats.rooms.map(room => `
+                                <tr>
+                                    <td><strong>${room.name}</strong></td>
+                                    <td><span class="badge bg-${room.type === 'vegetative' ? 'success' : 'warning'}">${room.type}</span></td>
+                                    <td>${room.plants_count}</td>
+                                    <td>${room.water_used_today}L</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <h6><i class="fas fa-map-marker-alt me-1"></i>By Zone</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Zone</th>
+                                <th>Room</th>
+                                <th>Plants</th>
+                                <th>Water Used</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${stats.zones.map(zone => `
+                                <tr class="${zone.active ? '' : 'text-muted'}">
+                                    <td><strong>${zone.name}</strong></td>
+                                    <td>${zone.room_name}</td>
+                                    <td>${zone.plant_count}</td>
+                                    <td>${zone.water_used_today}L</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 // Update room select options
 function updateRoomSelects() {
     const selects = document.querySelectorAll('#zoneRoom');
@@ -276,6 +377,19 @@ function updateZoneSelects() {
     });
 }
 
+// Update entity select options
+function updateEntitySelects() {
+    const selects = document.querySelectorAll('#pumpEntity, #solenoidEntity');
+    selects.forEach(select => {
+        const currentValue = select.value;
+        select.innerHTML = '<option value="">Select entity...</option>' +
+            entities.map(entity => `<option value="${entity.id}">${entity.name}</option>`).join('');
+        if (currentValue) {
+            select.value = currentValue;
+        }
+    });
+}
+
 // Update manual control options
 function updateManualControlOptions() {
     updateZoneSelects();
@@ -283,9 +397,13 @@ function updateManualControlOptions() {
 
 // Save room
 async function saveRoom() {
+    console.log('saveRoom function called');
+    
     const name = document.getElementById('roomName').value;
     const type = document.getElementById('roomType').value;
     const description = document.getElementById('roomDescription').value;
+
+    console.log('Form values:', { name, type, description });
 
     if (!name) {
         showAlert('Please enter a room name', 'warning');
@@ -293,6 +411,7 @@ async function saveRoom() {
     }
 
     try {
+        console.log('Sending request to /api/rooms');
         const response = await fetch('/api/rooms', {
             method: 'POST',
             headers: {
@@ -305,7 +424,10 @@ async function saveRoom() {
             })
         });
 
+        console.log('Response status:', response.status);
         const result = await response.json();
+        console.log('Response result:', result);
+        
         if (result.success) {
             showAlert('Room created successfully', 'success');
             document.getElementById('roomForm').reset();
