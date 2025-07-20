@@ -46,7 +46,7 @@ A comprehensive irrigation control system designed for hydroponic and soil-based
 1. **Add Repository to Home Assistant:**
    - Go to **Supervisor** → **Add-on Store**
    - Click the **⋮** menu → **Repositories**
-   - Add: `https://github.com/yourusername/ha-smart-irrigation`
+   - Add: `https://github.com/goatboynz/ha-smart-irrigation`
    - Click **Add**
 
 2. **Install the Addon:**
@@ -203,7 +203,7 @@ Access detailed logs via:
 ## Support
 
 For issues and feature requests:
-1. Check the [GitHub Issues](https://github.com/yourusername/ha-smart-irrigation/issues)
+1. Check the [GitHub Issues](https://github.com/goatboynz/ha-smart-irrigation/issues)
 2. Create a new issue with:
    - Addon version
    - Home Assistant version
