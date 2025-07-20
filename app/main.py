@@ -17,13 +17,11 @@ import requests
 import schedule
 import time
 import threading
-from irrigation_controller import IrrigationController
-from ha_integration import HomeAssistantIntegration
-
-# Setup logging
+# Setup logging first
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Initialize Flask app
 app = Flask(__name__, template_folder='/www/templates', static_folder='/www/static')
 app.config['SECRET_KEY'] = 'irrigation_secret_key'
 
@@ -35,27 +33,49 @@ def after_request(response):
     response.headers['Content-Security-Policy'] = "frame-ancestors 'self'"
     return response
 
+# Initialize SocketIO
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# Global controller instance
+# Global controller instance (initialize later to avoid startup delays)
 controller = None
 ha_integration = None
+
+# Import modules after Flask setup to catch any import errors
+try:
+    from irrigation_controller import IrrigationController
+    from ha_integration import HomeAssistantIntegration
+    logger.info("Successfully imported irrigation modules")
+except Exception as e:
+    logger.error(f"Error importing modules: {e}")
+    # Continue anyway to get basic web interface running
 
 @app.route('/')
 def index():
     """Main dashboard page"""
     logger.info("Index route accessed")
-    return render_template('index.html')
+    try:
+        return render_template('index.html')
+    except Exception as e:
+        logger.error(f"Error rendering index template: {e}")
+        return f"<h1>Smart Irrigation Controller</h1><p>Template error: {e}</p><p><a href='/health'>Health Check</a></p>"
 
 @app.route('/health')
 def health():
     """Health check endpoint"""
     logger.info("Health check accessed")
-    return {'status': 'ok', 'service': 'Smart Irrigation Controller'}
+    return {'status': 'ok', 'service': 'Smart Irrigation Controller', 'timestamp': datetime.now().isoformat()}
+
+@app.route('/test')
+def test():
+    """Simple test endpoint"""
+    logger.info("Test route accessed")
+    return "<h1>Flask is working!</h1><p>If you see this, the Flask app is running correctly.</p>"
 
 @app.route('/api/rooms', methods=['GET'])
 def get_rooms():
     """Get all configured rooms"""
+    if controller is None:
+        return jsonify({'error': 'Controller not initialized yet', 'rooms': []})
     return jsonify(controller.get_rooms())
 
 @app.route('/api/rooms', methods=['POST'])
@@ -81,6 +101,8 @@ def delete_room(room_id):
 @app.route('/api/zones', methods=['GET'])
 def get_zones():
     """Get all zones"""
+    if controller is None:
+        return jsonify([])
     return jsonify(controller.get_zones())
 
 @app.route('/api/zones', methods=['POST'])
@@ -93,6 +115,8 @@ def create_zone():
 @app.route('/api/schedules', methods=['GET'])
 def get_schedules():
     """Get all irrigation schedules"""
+    if controller is None:
+        return jsonify([])
     return jsonify(controller.get_schedules())
 
 @app.route('/api/schedules', methods=['POST'])
@@ -115,6 +139,8 @@ def manual_water():
 @app.route('/api/status', methods=['GET'])
 def get_status():
     """Get current system status"""
+    if controller is None:
+        return jsonify({'system_active': False, 'active_zones': [], 'water_usage_today': 0, 'status': 'initializing'})
     return jsonify(controller.get_status())
 
 @socketio.on('connect')
@@ -141,18 +167,36 @@ def main():
     log_level = getattr(logging, args.log_level.upper())
     logging.getLogger().setLevel(log_level)
     
-    # Initialize controller
-    global controller, ha_integration
-    controller = IrrigationController()
-    ha_integration = HomeAssistantIntegration()
+    # Initialize controllers in a separate thread to avoid blocking startup
+    def initialize_controllers():
+        global controller, ha_integration
+        try:
+            logger.info("Initializing irrigation controller...")
+            controller = IrrigationController()
+            logger.info("Initializing Home Assistant integration...")
+            ha_integration = HomeAssistantIntegration()
+            logger.info("Controllers initialized successfully")
+            
+            # Start schedule runner
+            schedule_thread = threading.Thread(target=schedule_runner, daemon=True)
+            schedule_thread.start()
+            logger.info("Schedule runner started")
+        except Exception as e:
+            logger.error(f"Error initializing controllers: {e}")
     
-    # Start schedule runner in background
-    schedule_thread = threading.Thread(target=schedule_runner, daemon=True)
-    schedule_thread.start()
+    # Start controller initialization in background
+    init_thread = threading.Thread(target=initialize_controllers, daemon=True)
+    init_thread.start()
     
     logger.info(f"Starting Smart Irrigation Controller on port {port}")
-    # For Home Assistant ingress, bind to all interfaces
-    socketio.run(app, host='0.0.0.0', port=port, debug=False, allow_unsafe_werkzeug=True, use_reloader=False)
+    logger.info("Flask app starting - this should resolve 503 errors")
+    
+    try:
+        # For Home Assistant ingress, bind to all interfaces
+        socketio.run(app, host='0.0.0.0', port=port, debug=False, allow_unsafe_werkzeug=True, use_reloader=False)
+    except Exception as e:
+        logger.error(f"Error starting Flask app: {e}")
+        raise
 
 if __name__ == '__main__':
     main()

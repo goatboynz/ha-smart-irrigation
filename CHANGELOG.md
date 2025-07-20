@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.7] - 2025-01-21
+
+### Fixed
+- Major fix for 503 Service Unavailable errors
+- Improved Flask app startup with better error handling
+- Initialize controllers in background to prevent startup delays
+- Added fallback responses for API routes when controllers not ready
+- Added test endpoint (/test) for debugging Flask connectivity
+- Better import error handling to prevent app crashes
+
+### Added
+- Background controller initialization to speed up startup
+- Test route for debugging ingress connectivity
+- Graceful handling of uninitialized controllers
+- Enhanced logging for troubleshooting startup issues
+
+### Changed
+- Controllers now initialize after Flask app starts
+- API routes return empty arrays instead of errors when not ready
+- Improved error handling throughout the application
+
 ## [1.0.6] - 2025-01-21
 
 ### Fixed
