@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.3] - 2025-01-21
+
+### Fixed
+- Fixed Python module import errors (yaml, flask, requests)
+- Install all Python dependencies via pip in virtual environment for consistency
+- Resolved ModuleNotFoundError for yaml and other system packages
+
+### Changed
+- Use pip for all Python packages instead of mixing system and pip packages
+- Ensures all modules are available in the virtual environment
+
 ## [1.0.2] - 2025-01-21
 
 ### Fixed
