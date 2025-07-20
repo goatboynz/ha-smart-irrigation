@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.6] - 2025-01-21
+
+### Fixed
+- Fixed 503 Service Unavailable error with ingress
+- Removed configurable port for ingress compatibility
+- Fixed ingress port configuration for Home Assistant
+- Added health check endpoint for debugging
+- Simplified ingress setup for better reliability
+
+### Changed
+- Fixed port 8099 for ingress (no longer configurable)
+- Updated run script to work with ingress
+- Improved logging for ingress troubleshooting
+
 ## [1.0.5] - 2025-01-21
 
 ### Added

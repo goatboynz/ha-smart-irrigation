@@ -1,6 +1,6 @@
 name: "Smart Irrigation Controller"
 description: "Advanced irrigation control system for hydroponic and soil-based growing"
-version: "1.0.5"
+version: "1.0.6"
 slug: smart_irrigation
 init: false
 arch:
@@ -12,13 +12,10 @@ arch:
 startup: application
 boot: auto
 ingress: true
-ingress_port: 8099
 panel_icon: mdi:sprinkler-variant
 panel_title: "Irrigation Controller"
 panel_admin: false
 options:
   log_level: info
-  web_port: 8099
 schema:
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
-  web_port: port

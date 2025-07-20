@@ -44,7 +44,14 @@ ha_integration = None
 @app.route('/')
 def index():
     """Main dashboard page"""
+    logger.info("Index route accessed")
     return render_template('index.html')
+
+@app.route('/health')
+def health():
+    """Health check endpoint"""
+    logger.info("Health check accessed")
+    return {'status': 'ok', 'service': 'Smart Irrigation Controller'}
 
 @app.route('/api/rooms', methods=['GET'])
 def get_rooms():
@@ -124,9 +131,11 @@ def schedule_runner():
 
 def main():
     parser = argparse.ArgumentParser(description='Smart Irrigation Controller')
-    parser.add_argument('--port', type=int, default=8099, help='Web server port')
     parser.add_argument('--log-level', default='info', help='Log level')
     args = parser.parse_args()
+    
+    # For Home Assistant ingress, always use port 8099
+    port = 8099
     
     # Set log level
     log_level = getattr(logging, args.log_level.upper())
@@ -141,8 +150,9 @@ def main():
     schedule_thread = threading.Thread(target=schedule_runner, daemon=True)
     schedule_thread.start()
     
-    logger.info(f"Starting Smart Irrigation Controller on port {args.port}")
-    socketio.run(app, host='0.0.0.0', port=args.port, debug=False, allow_unsafe_werkzeug=True)
+    logger.info(f"Starting Smart Irrigation Controller on port {port}")
+    # For Home Assistant ingress, bind to all interfaces
+    socketio.run(app, host='0.0.0.0', port=port, debug=False, allow_unsafe_werkzeug=True, use_reloader=False)
 
 if __name__ == '__main__':
     main()

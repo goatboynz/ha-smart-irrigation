@@ -2,12 +2,11 @@
 
 # Get configuration
 LOG_LEVEL=$(bashio::config 'log_level')
-WEB_PORT=$(bashio::config 'web_port')
 
 bashio::log.info "Starting Smart Irrigation Controller..."
 bashio::log.info "Log level: ${LOG_LEVEL}"
-bashio::log.info "Web port: ${WEB_PORT}"
+bashio::log.info "Using ingress on port 8099"
 
 # Start the irrigation controller
 cd /app
-python3 main.py --port="${WEB_PORT}" --log-level="${LOG_LEVEL}"
+python3 main.py --log-level="${LOG_LEVEL}"
