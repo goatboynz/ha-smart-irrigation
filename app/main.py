@@ -133,7 +133,7 @@ def main():
     schedule_thread.start()
     
     logger.info(f"Starting Smart Irrigation Controller on port {args.port}")
-    socketio.run(app, host='0.0.0.0', port=args.port, debug=False)
+    socketio.run(app, host='0.0.0.0', port=args.port, debug=False, allow_unsafe_werkzeug=True)
 
 if __name__ == '__main__':
     main()

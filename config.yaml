@@ -1,6 +1,6 @@
 name: "Smart Irrigation Controller"
 description: "Advanced irrigation control system for hydroponic and soil-based growing"
-version: "1.0.3"
+version: "1.0.4"
 slug: smart_irrigation
 init: false
 arch:
@@ -15,6 +15,10 @@ ports:
   "8099/tcp": 8099
 ports_description:
   "8099/tcp": "Web interface"
+panel_icon: mdi:sprinkler-variant
+panel_title: "Irrigation Controller"
+panel_admin: false
+webui: "http://[HOST]:[PORT:8099]"
 options:
   log_level: info
   web_port: 8099

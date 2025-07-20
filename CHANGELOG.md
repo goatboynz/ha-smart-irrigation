@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.4] - 2025-01-21
+
+### Fixed
+- Fixed Flask-SocketIO production server error
+- Added allow_unsafe_werkzeug=True parameter to enable server startup
+- Resolved RuntimeError about Werkzeug web server in production
+
+### Changed
+- Updated SocketIO server configuration for Home Assistant addon environment
+
 ## [1.0.3] - 2025-01-21
 
 ### Fixed
