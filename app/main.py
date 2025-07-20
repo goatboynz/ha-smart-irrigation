@@ -26,6 +26,15 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__, template_folder='/www/templates', static_folder='/www/static')
 app.config['SECRET_KEY'] = 'irrigation_secret_key'
+
+# Configure for Home Assistant ingress
+@app.after_request
+def after_request(response):
+    # Allow embedding in Home Assistant iframe
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['Content-Security-Policy'] = "frame-ancestors 'self'"
+    return response
+
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Global controller instance

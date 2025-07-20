@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.5] - 2025-01-21
+
+### Added
+- Home Assistant ingress support for embedded UI
+- UI now runs inside Home Assistant interface (no external window)
+- Added proper iframe headers for Home Assistant integration
+- Ingress port configuration for seamless integration
+
+### Changed
+- Removed external port exposure in favor of ingress
+- Updated Flask app configuration for Home Assistant embedding
+- UI accessible directly through Home Assistant sidebar
+
 ## [1.0.4] - 2025-01-21
 
 ### Fixed
