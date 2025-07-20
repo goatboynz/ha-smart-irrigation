@@ -1,0 +1,11 @@
+{
+  "name": "smart-irrigation-ui",
+  "version": "1.0.0",
+  "description": "Smart Irrigation Controller Web Interface",
+  "scripts": {
+    "build": "mkdir -p static/js static/css && cp src/js/* static/js/ && cp src/css/* static/css/",
+    "dev": "npm run build"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

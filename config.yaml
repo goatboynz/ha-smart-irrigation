@@ -1,0 +1,24 @@
+name: "Smart Irrigation Controller"
+description: "Advanced irrigation control system for hydroponic and soil-based growing"
+version: "1.0.0"
+slug: smart_irrigation
+init: false
+arch:
+  - armhf
+  - armv7
+  - aarch64
+  - amd64
+  - i386
+startup: application
+boot: auto
+ports:
+  "8099/tcp": 8099
+ports_description:
+  "8099/tcp": "Web interface"
+options:
+  log_level: info
+  web_port: 8099
+schema:
+  log_level: list(trace|debug|info|notice|warning|error|fatal)?
+  web_port: port
+image: "ghcr.io/{arch}-addon-smart-irrigation"
