@@ -24,7 +24,11 @@ class IrrigationController:
             'last_watering': None,
             'next_watering': None,
             'active_zones': [],
-            'water_usage_today': 0
+            'water_usage_today': 0,
+            'water_usage_by_room': {},
+            'water_usage_by_zone': {},
+            'total_plants': 0,
+            'active_schedules': 0
         }
         
     def load_config(self) -> Dict:
@@ -251,12 +255,28 @@ class IrrigationController:
         # Calculate water usage
         duration_hours = watering['duration'] / 60
         water_used = zone['flow_rate'] * duration_hours
+        
+        # Update total water usage
         self.status['water_usage_today'] += water_used
+        
+        # Update per-zone water usage
+        if zone_id not in self.status['water_usage_by_zone']:
+            self.status['water_usage_by_zone'][zone_id] = 0
+        self.status['water_usage_by_zone'][zone_id] += water_used
+        
+        # Update per-room water usage
+        room_id = zone['room_id']
+        if room_id not in self.status['water_usage_by_room']:
+            self.status['water_usage_by_room'][room_id] = 0
+        self.status['water_usage_by_room'][room_id] += water_used
         
         # Remove from active waterings
         del self.active_waterings[zone_id]
         
         self.status['last_watering'] = datetime.now().isoformat()
+        
+        # Save updated status
+        self.save_config()
     
     def manual_water(self, zone_id: str, duration: int) -> Dict:
         """Manually trigger watering"""
@@ -272,4 +292,49 @@ class IrrigationController:
     def get_status(self) -> Dict:
         """Get current system status"""
         self.status['active_zones'] = list(self.active_waterings.keys())
+        
+        # Update statistics
+        self.status['total_plants'] = sum(zone.get('plant_count', 0) for zone in self.config['zones'].values())
+        self.status['active_schedules'] = sum(1 for schedule in self.config['schedules'].values() if schedule.get('active', True))
+        
         return self.status
+    
+    def get_detailed_stats(self) -> Dict:
+        """Get detailed statistics with room and zone breakdowns"""
+        stats = {
+            'total_water_today': self.status['water_usage_today'],
+            'rooms': [],
+            'zones': []
+        }
+        
+        # Room statistics
+        for room_id, room in self.config['rooms'].items():
+            room_zones = [z for z in self.config['zones'].values() if z['room_id'] == room_id]
+            room_plants = sum(z.get('plant_count', 0) for z in room_zones)
+            room_water = self.status['water_usage_by_room'].get(room_id, 0)
+            
+            stats['rooms'].append({
+                'id': room_id,
+                'name': room['name'],
+                'type': room['type'],
+                'zones_count': len(room_zones),
+                'plants_count': room_plants,
+                'water_used_today': round(room_water, 2)
+            })
+        
+        # Zone statistics
+        for zone_id, zone in self.config['zones'].items():
+            zone_water = self.status['water_usage_by_zone'].get(zone_id, 0)
+            room = self.config['rooms'].get(zone['room_id'], {})
+            
+            stats['zones'].append({
+                'id': zone_id,
+                'name': zone['name'],
+                'room_name': room.get('name', 'Unknown'),
+                'plant_count': zone.get('plant_count', 0),
+                'flow_rate': zone.get('flow_rate', 0),
+                'water_used_today': round(zone_water, 2),
+                'active': zone.get('active', True)
+            })
+        
+        return stats

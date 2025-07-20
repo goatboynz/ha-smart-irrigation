@@ -118,13 +118,24 @@
             <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
                 <div class="row mt-4">
                     <div class="col-md-8">
-                        <div class="card">
+                        <div class="card mb-3">
                             <div class="card-header">
                                 <h5><i class="fas fa-tint me-2"></i>Active Watering Sessions</h5>
                             </div>
                             <div class="card-body">
                                 <div id="active-waterings">
                                     <p class="text-muted">No active watering sessions</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-bar me-2"></i>Water Usage Statistics</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="detailed-stats">
+                                    <p class="text-muted">Loading statistics...</p>
                                 </div>
                             </div>
                         </div>
@@ -256,11 +267,17 @@
                         </div>
                         <div class="mb-3">
                             <label for="pumpEntity" class="form-label">Pump Switch Entity</label>
-                            <input type="text" class="form-control" id="pumpEntity" placeholder="switch.pump_1">
+                            <select class="form-select" id="pumpEntity">
+                                <option value="">Select pump entity...</option>
+                            </select>
+                            <small class="form-text text-muted">Select the Home Assistant switch entity for the pump</small>
                         </div>
                         <div class="mb-3">
                             <label for="solenoidEntity" class="form-label">Solenoid Switch Entity</label>
-                            <input type="text" class="form-control" id="solenoidEntity" placeholder="switch.solenoid_1">
+                            <select class="form-select" id="solenoidEntity">
+                                <option value="">Select solenoid entity...</option>
+                            </select>
+                            <small class="form-text text-muted">Select the Home Assistant switch entity for the solenoid valve</small>
                         </div>
                     </form>
                 </div>

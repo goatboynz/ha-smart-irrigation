@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.8] - 2025-01-21
+
+### Fixed
+- Fixed "Add New Room" functionality - now works properly
+- Fixed all POST API routes to handle uninitialized controllers
+- Fixed zone creation, schedule creation, and manual watering
+
+### Added
+- Home Assistant entity selection for pumps and solenoids
+- Detailed water usage statistics by room and zone
+- Enhanced dashboard with water usage breakdown tables
+- API endpoint for fetching Home Assistant switch entities
+- Per-room and per-zone water usage tracking
+- Total plants count and active schedules count
+- Searchable entity dropdowns in zone creation form
+
+### Enhanced
+- Zone form now has dropdown selects for HA entities
+- Dashboard shows detailed water usage statistics
+- Real-time statistics with room and zone breakdowns
+- Better user experience with entity selection
+- Enhanced status tracking with detailed metrics
+
 ## [1.0.7] - 2025-01-21
 
 ### Fixed

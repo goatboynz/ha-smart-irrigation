@@ -81,6 +81,8 @@ def get_rooms():
 @app.route('/api/rooms', methods=['POST'])
 def create_room():
     """Create a new room"""
+    if controller is None:
+        return jsonify({'success': False, 'error': 'Controller not initialized yet'})
     data = request.json
     result = controller.create_room(data)
     return jsonify(result)
@@ -108,6 +110,8 @@ def get_zones():
 @app.route('/api/zones', methods=['POST'])
 def create_zone():
     """Create a new irrigation zone"""
+    if controller is None:
+        return jsonify({'success': False, 'error': 'Controller not initialized yet'})
     data = request.json
     result = controller.create_zone(data)
     return jsonify(result)
@@ -122,6 +126,8 @@ def get_schedules():
 @app.route('/api/schedules', methods=['POST'])
 def create_schedule():
     """Create a new irrigation schedule"""
+    if controller is None:
+        return jsonify({'success': False, 'error': 'Controller not initialized yet'})
     data = request.json
     result = controller.create_schedule(data)
     return jsonify(result)
@@ -129,6 +135,8 @@ def create_schedule():
 @app.route('/api/manual-water', methods=['POST'])
 def manual_water():
     """Manually trigger watering for a zone"""
+    if controller is None:
+        return jsonify({'success': False, 'error': 'Controller not initialized yet'})
     data = request.json
     zone_id = data.get('zone_id')
     duration = data.get('duration', 60)  # Default 1 minute
@@ -136,12 +144,35 @@ def manual_water():
     result = controller.manual_water(zone_id, duration)
     return jsonify(result)
 
+@app.route('/api/entities', methods=['GET'])
+def get_entities():
+    """Get Home Assistant switch entities"""
+    if ha_integration is None:
+        return jsonify({'switches': [], 'error': 'Home Assistant integration not initialized'})
+    
+    try:
+        switches = ha_integration.get_all_switches()
+        # Format for dropdown
+        entities = [{'id': switch['entity_id'], 'name': switch['attributes'].get('friendly_name', switch['entity_id'])} 
+                   for switch in switches]
+        return jsonify({'switches': entities})
+    except Exception as e:
+        logger.error(f"Error getting entities: {e}")
+        return jsonify({'switches': [], 'error': str(e)})
+
 @app.route('/api/status', methods=['GET'])
 def get_status():
     """Get current system status"""
     if controller is None:
         return jsonify({'system_active': False, 'active_zones': [], 'water_usage_today': 0, 'status': 'initializing'})
     return jsonify(controller.get_status())
+
+@app.route('/api/stats', methods=['GET'])
+def get_detailed_stats():
+    """Get detailed statistics with room and zone breakdowns"""
+    if controller is None:
+        return jsonify({'total_water_today': 0, 'rooms': [], 'zones': []})
+    return jsonify(controller.get_detailed_stats())
 
 @socketio.on('connect')
 def handle_connect():
