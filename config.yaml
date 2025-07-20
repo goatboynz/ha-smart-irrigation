@@ -1,6 +1,6 @@
 name: "Smart Irrigation Controller"
 description: "Advanced irrigation control system for hydroponic and soil-based growing"
-version: "1.0.0"
+version: "1.0.1"
 slug: smart_irrigation
 init: false
 arch:
@@ -21,4 +21,3 @@ options:
 schema:
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
   web_port: port
-image: "ghcr.io/{arch}-addon-smart-irrigation"

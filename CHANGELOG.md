@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1] - 2025-01-21
+
+### Fixed
+- Removed GitHub Actions workflow to allow Home Assistant local building
+- Removed Docker image reference from config.yaml for local builds
+- Cleaned up build configuration for Home Assistant Supervisor compatibility
+
+### Changed
+- Addon now builds locally in Home Assistant instead of pulling from registry
+- Simplified deployment process for easier installation
+
 ## [1.0.0] - 2025-01-21
 
 ### Added
