@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.2] - 2025-01-21
+
+### Fixed
+- Fixed Docker build issues with Python environment management
+- Updated Dockerfile to use virtual environment for Python packages
+- Fixed ARG BUILD_FROM default value issue
+- Simplified build process by removing unnecessary npm build steps
+- Resolved Alpine Linux externally-managed-environment error
+
+### Changed
+- Use Python virtual environment instead of system-wide pip installation
+- Streamlined Docker build process for better compatibility
+
 ## [1.0.1] - 2025-01-21
 
 ### Fixed

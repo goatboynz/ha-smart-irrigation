@@ -1,28 +1,35 @@
-ARG BUILD_FROM
+ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:latest
 FROM $BUILD_FROM
 
-# Install requirements
+# Install requirements using system packages
 RUN apk add --no-cache \
     python3 \
     py3-pip \
     py3-flask \
     py3-requests \
     py3-yaml \
-    py3-schedule \
     nodejs \
-    npm
+    npm \
+    py3-setuptools \
+    py3-wheel
 
 # Copy data
 COPY run.sh /
 COPY app/ /app/
 COPY www/ /www/
 
-# Install Python dependencies
-RUN pip3 install --no-cache-dir flask flask-socketio pyyaml schedule requests python-crontab
+# Create virtual environment and install Python dependencies
+RUN python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --no-cache-dir \
+    flask-socketio \
+    schedule \
+    python-crontab
 
-# Install Node.js dependencies and build frontend
+# Update PATH to use virtual environment
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Ensure static files are in place (they're already copied)
 WORKDIR /www
-RUN npm install && npm run build
 
 # Make run script executable
 RUN chmod a+x /run.sh
