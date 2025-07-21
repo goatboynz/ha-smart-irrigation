@@ -17,6 +17,7 @@ import requests
 import schedule
 import time
 import threading
+
 # Setup logging first
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -116,72 +117,6 @@ def test_js():
     </html>
     '''
 
-@app.route('/test-js')
-def test_js():
-    """Test JavaScript functionality"""
-    return '''
-    <!DOCTYPE html>
-    <html>
-    <head><title>JS Test</title></head>
-    <body>
-        <h1>JavaScript Test</h1>
-        <button onclick="testSaveRoom()">Test Save Room Function</button>
-        <div id="result"></div>
-        
-        <script>
-        function testSaveRoom() {
-            console.log('Testing saveRoom function...');
-            document.getElementById('result').innerHTML = 'Testing...';
-            
-            fetch('/api/rooms', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({name: 'Test Room', type: 'vegetative', description: 'Test'})
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Result:', data);
-                document.getElementById('result').innerHTML = 'Result: ' + JSON.stringify(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('result').innerHTML = 'Error: ' + error;
-            });
-        }
-        </script>
-    </body>
-    </html>
-    '''
-
-@app.route('/test-js')
-def test_js():
-    """Test JavaScript functionality"""
-    return '''
-    <html>
-    <head><title>JavaScript Test</title></head>
-    <body>
-        <h1>JavaScript Test</h1>
-        <button onclick="testFunction()">Test Button</button>
-        <div id="result"></div>
-        <script>
-            function testFunction() {
-                document.getElementById('result').innerHTML = 'JavaScript is working!';
-                fetch('/api/rooms')
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('API test:', data);
-                        document.getElementById('result').innerHTML += '<br>API call successful: ' + JSON.stringify(data);
-                    })
-                    .catch(error => {
-                        console.error('API test failed:', error);
-                        document.getElementById('result').innerHTML += '<br>API call failed: ' + error;
-                    });
-            }
-        </script>
-    </body>
-    </html>
-    '''
-
 @app.route('/api/rooms', methods=['GET'])
 def get_rooms():
     """Get all configured rooms"""
@@ -207,55 +142,6 @@ def create_room():
     except Exception as e:
         logger.error(f"Error creating room: {e}")
         return jsonify({'success': False, 'error': str(e)})
-
-@app.route('/debug/create-test-room')
-def debug_create_test_room():
-    """Debug endpoint to test room creation"""
-    logger.info("Debug create test room called")
-    if controller is None:
-        return jsonify({'success': False, 'error': 'Controller not initialized'})
-    
-    test_data = {
-        'name': f'Test Room {datetime.now().strftime("%H:%M:%S")}',
-        'type': 'vegetative',
-        'description': 'Debug test room created via direct endpoint'
-    }
-    
-    try:
-        result = controller.create_room(test_data)
-        logger.info(f"Debug room creation result: {result}")
-        return jsonify(result)
-    except Exception as e:
-        logger.error(f"Debug room creation error: {e}")
-        return jsonify({'success': False, 'error': str(e)})
-
-@app.route('/debug/list-rooms')
-def debug_list_rooms():
-    """Debug endpoint to list all rooms"""
-    logger.info("Debug list rooms called")
-    if controller is None:
-        return jsonify({'rooms': [], 'error': 'Controller not initialized'})
-    
-    try:
-        rooms = controller.get_rooms()
-        logger.info(f"Debug rooms list: {rooms}")
-        return jsonify({'rooms': rooms, 'count': len(rooms)})
-    except Exception as e:
-        logger.error(f"Debug list rooms error: {e}")
-        return jsonify({'rooms': [], 'error': str(e)})
-
-@app.route('/api/rooms/<room_id>', methods=['PUT'])
-def update_room(room_id):
-    """Update room configuration"""
-    data = request.json
-    result = controller.update_room(room_id, data)
-    return jsonify(result)
-
-@app.route('/api/rooms/<room_id>', methods=['DELETE'])
-def delete_room(room_id):
-    """Delete a room"""
-    result = controller.delete_room(room_id)
-    return jsonify(result)
 
 @app.route('/api/zones', methods=['GET'])
 def get_zones():
@@ -331,11 +217,47 @@ def get_detailed_stats():
         return jsonify({'total_water_today': 0, 'rooms': [], 'zones': []})
     return jsonify(controller.get_detailed_stats())
 
+@app.route('/debug/create-test-room')
+def debug_create_test_room():
+    """Debug endpoint to test room creation"""
+    logger.info("Debug create test room called")
+    if controller is None:
+        return jsonify({'success': False, 'error': 'Controller not initialized'})
+    
+    test_data = {
+        'name': f'Test Room {datetime.now().strftime("%H:%M:%S")}',
+        'type': 'vegetative',
+        'description': 'Debug test room created via direct endpoint'
+    }
+    
+    try:
+        result = controller.create_room(test_data)
+        logger.info(f"Debug room creation result: {result}")
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Debug room creation error: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/debug/list-rooms')
+def debug_list_rooms():
+    """Debug endpoint to list all rooms"""
+    logger.info("Debug list rooms called")
+    if controller is None:
+        return jsonify({'rooms': [], 'error': 'Controller not initialized'})
+    
+    try:
+        rooms = controller.get_rooms()
+        logger.info(f"Debug rooms list: {rooms}")
+        return jsonify({'rooms': rooms, 'count': len(rooms)})
+    except Exception as e:
+        logger.error(f"Debug list rooms error: {e}")
+        return jsonify({'rooms': [], 'error': str(e)})
+
 @socketio.on('connect')
 def handle_connect():
     """Handle client connection"""
     logger.info('Client connected')
-    emit('status_update', controller.get_status())
+    emit('status_update', controller.get_status() if controller else {})
 
 def schedule_runner():
     """Background thread to run scheduled tasks"""

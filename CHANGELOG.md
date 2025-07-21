@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.3] - 2025-01-21
+
+### Fixed
+- **CRITICAL FIX**: Removed duplicate Flask route definitions causing startup crash
+- Fixed "View function mapping is overwriting an existing endpoint function" error
+- Cleaned up main.py to remove all duplicate @app.route('/test-js') definitions
+- App should now start successfully without Flask route conflicts
+
+### Technical Fixes
+- Consolidated duplicate test-js routes into single clean implementation
+- Removed redundant route definitions that were causing AssertionError
+- Streamlined main.py structure for better maintainability
+- Fixed Flask app startup crash that was preventing addon from running
+
 ## [1.1.2] - 2025-01-21
 
 ### Enhanced Debugging
