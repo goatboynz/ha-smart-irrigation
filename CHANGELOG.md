@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2] - 2025-01-21
+
+### Enhanced Debugging
+- Added direct API test function (testAddRoomDirect) for bypassing UI
+- Added "Test Add Room API" button to dashboard for direct testing
+- Added inline alert to Save Room button to verify click events
+- Added debug endpoints: /debug/create-test-room and /debug/list-rooms
+- Enhanced JavaScript debugging with window-level test functions
+
+### Debug Tools Added
+- Direct room creation test bypassing the modal form
+- Button click verification with inline alerts
+- API connectivity testing from browser console
+- Server-side debug endpoints for direct database testing
+- Enhanced logging for all room creation attempts
+
+### Testing Features
+- testAddRoomDirect() function for direct API testing
+- Debug buttons on dashboard for immediate testing
+- Enhanced modal button with click verification
+- Direct database access testing endpoints
+
 ## [1.1.1] - 2025-01-21
 
 ### Fixed

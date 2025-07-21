@@ -25,6 +25,14 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__, template_folder='/www/templates', static_folder='/www/static')
 app.config['SECRET_KEY'] = 'irrigation_secret_key'
 
+# Add logging for static file requests
+@app.before_request
+def log_request_info():
+    if request.path.startswith('/static/'):
+        logger.info(f"Static file request: {request.path}")
+    elif request.path.startswith('/api/'):
+        logger.info(f"API request: {request.method} {request.path}")
+
 # Configure for Home Assistant ingress
 @app.after_request
 def after_request(response):
@@ -57,7 +65,7 @@ def index():
         return render_template('index.html')
     except Exception as e:
         logger.error(f"Error rendering index template: {e}")
-        return f"<h1>Smart Irrigation Controller</h1><p>Template error: {e}</p><p><a href='/health'>Health Check</a></p>"
+        return f"<h1>Smart Irrigation Controller</h1><p>Template error: {e}</p><p><a href='/health'>Health Check</a></p><p><a href='/test-js'>Test JavaScript</a></p>"
 
 @app.route('/health')
 def health():
@@ -70,6 +78,80 @@ def test():
     """Simple test endpoint"""
     logger.info("Test route accessed")
     return "<h1>Flask is working!</h1><p>If you see this, the Flask app is running correctly.</p>"
+
+@app.route('/test-js')
+def test_js():
+    """Test JavaScript functionality"""
+    return '''
+    <!DOCTYPE html>
+    <html>
+    <head><title>JS Test</title></head>
+    <body>
+        <h1>JavaScript Test</h1>
+        <button onclick="testSaveRoom()">Test Save Room Function</button>
+        <div id="result"></div>
+        <script>
+            function testSaveRoom() {
+                console.log('Test button clicked');
+                document.getElementById('result').innerHTML = 'Test function called!';
+                
+                // Test fetch to API
+                fetch('/api/rooms', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({name: 'Test Room', type: 'vegetative', description: 'Test'})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('API Response:', data);
+                    document.getElementById('result').innerHTML += '<br>API Response: ' + JSON.stringify(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('result').innerHTML += '<br>Error: ' + error;
+                });
+            }
+        </script>
+    </body>
+    </html>
+    '''
+
+@app.route('/test-js')
+def test_js():
+    """Test JavaScript functionality"""
+    return '''
+    <!DOCTYPE html>
+    <html>
+    <head><title>JS Test</title></head>
+    <body>
+        <h1>JavaScript Test</h1>
+        <button onclick="testSaveRoom()">Test Save Room Function</button>
+        <div id="result"></div>
+        
+        <script>
+        function testSaveRoom() {
+            console.log('Testing saveRoom function...');
+            document.getElementById('result').innerHTML = 'Testing...';
+            
+            fetch('/api/rooms', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name: 'Test Room', type: 'vegetative', description: 'Test'})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Result:', data);
+                document.getElementById('result').innerHTML = 'Result: ' + JSON.stringify(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = 'Error: ' + error;
+            });
+        }
+        </script>
+    </body>
+    </html>
+    '''
 
 @app.route('/test-js')
 def test_js():
@@ -134,9 +216,9 @@ def debug_create_test_room():
         return jsonify({'success': False, 'error': 'Controller not initialized'})
     
     test_data = {
-        'name': 'Test Room',
+        'name': f'Test Room {datetime.now().strftime("%H:%M:%S")}',
         'type': 'vegetative',
-        'description': 'Debug test room'
+        'description': 'Debug test room created via direct endpoint'
     }
     
     try:
@@ -146,6 +228,21 @@ def debug_create_test_room():
     except Exception as e:
         logger.error(f"Debug room creation error: {e}")
         return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/debug/list-rooms')
+def debug_list_rooms():
+    """Debug endpoint to list all rooms"""
+    logger.info("Debug list rooms called")
+    if controller is None:
+        return jsonify({'rooms': [], 'error': 'Controller not initialized'})
+    
+    try:
+        rooms = controller.get_rooms()
+        logger.info(f"Debug rooms list: {rooms}")
+        return jsonify({'rooms': rooms, 'count': len(rooms)})
+    except Exception as e:
+        logger.error(f"Debug list rooms error: {e}")
+        return jsonify({'rooms': [], 'error': str(e)})
 
 @app.route('/api/rooms/<room_id>', methods=['PUT'])
 def update_room(room_id):

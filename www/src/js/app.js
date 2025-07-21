@@ -57,6 +57,31 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.error('Initial API test failed:', error);
         });
+    
+    // Add debug test function
+    window.testAddRoomDirect = function() {
+        console.log('Testing Add Room API directly');
+        fetch('/api/rooms', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name: 'Debug Test Room', type: 'vegetative', description: 'Test room from debug'})
+        })
+        .then(response => {
+            console.log('API Response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('API Response data:', data);
+            alert('API Response: ' + JSON.stringify(data));
+            if (data.success) {
+                loadRooms(); // Reload rooms if successful
+            }
+        })
+        .catch(error => {
+            console.error('API Error:', error);
+            alert('API Error: ' + error);
+        });
+    };
 });
 
 // Socket.IO event listeners
