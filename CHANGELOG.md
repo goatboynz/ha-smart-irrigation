@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2025-01-21 - MAJOR DATABASE UPGRADE
+
+### 🗄️ NEW: SQLite Database Implementation
+- **Complete database rewrite** - Replaced JSON config with SQLite database
+- **Reliable data storage** - No more file corruption or save issues
+- **Proper relationships** - Foreign keys between rooms, zones, and schedules
+- **Water usage logging** - Persistent tracking of all watering events
+- **Better performance** - Faster queries and data retrieval
+
+### ✅ FIXES:
+- **Fixed "Add New Room"** - Database ensures reliable room creation
+- **Fixed all data persistence** - No more lost configurations
+- **Fixed water usage tracking** - Proper per-room and per-zone statistics
+- **Fixed concurrent access** - Database handles multiple operations safely
+
+### 🆕 NEW FEATURES:
+- **Water usage history** - Complete log of all watering events
+- **Enhanced statistics** - Real-time data from database queries
+- **Better error handling** - Database constraints prevent invalid data
+- **Automatic migrations** - Database schema updates automatically
+
+### 🔧 TECHNICAL IMPROVEMENTS:
+- Added SQLite support to Docker container
+- New database.py module with comprehensive data management
+- Updated irrigation_controller.py to use database
+- Enhanced JavaScript debugging and error reporting
+- Better static file handling
+
+### 📊 DATABASE TABLES:
+- **rooms** - Room configurations with types and descriptions
+- **zones** - Irrigation zones with plant counts and entities
+- **schedules** - Watering schedules with times and frequencies
+- **water_usage** - Complete log of all watering events
+- **settings** - System configuration settings
+
+This is a major upgrade that should resolve all data persistence issues!
+
 ## [1.0.9] - 2025-01-21
 
 ### Fixed

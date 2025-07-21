@@ -11,9 +11,17 @@ let entities = [];
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Smart Irrigation Controller JavaScript loaded');
     loadData();
     setupSocketListeners();
     setupEventListeners();
+    
+    // Test if saveRoom function is available
+    if (typeof saveRoom === 'function') {
+        console.log('saveRoom function is available');
+    } else {
+        console.error('saveRoom function is NOT available');
+    }
 });
 
 // Socket.IO event listeners
