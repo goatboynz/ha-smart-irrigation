@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.5] - 2025-01-21
+
+### Debug Add Room Issue
+- **Added console logging** to saveRoom function to track API calls
+- **Enhanced debug menu** with database connection testing
+- **Added manual API test** button in debug menu
+- **Database connectivity test** endpoint to verify SQLite connection
+- **Improved troubleshooting** tools for Add Room functionality
+
+### Debug Tools Added
+- /debug/test-db endpoint to verify database connection
+- Manual API test button in debug menu for direct room creation
+- Enhanced console logging in saveRoom JavaScript function
+- Database path and room count verification
+- Step-by-step API call tracking
+
+### Troubleshooting Features
+- Console logs show: form data, API request, response status, result
+- Database connection verification with room count
+- Manual API testing bypassing UI form
+- Enhanced debug menu with comprehensive testing tools
+
 ## [1.1.4] - 2025-01-21
 
 ### Cleaned Up Production Version

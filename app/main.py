@@ -84,11 +84,32 @@ def debug_menu():
     <body>
         <h1>Smart Irrigation Debug Menu</h1>
         <ul>
+            <li><a href="/debug/test-db">Test Database Connection</a></li>
             <li><a href="/debug/create-test-room">Create Test Room</a></li>
             <li><a href="/debug/list-rooms">List All Rooms</a></li>
             <li><a href="/health">Health Check</a></li>
             <li><a href="/">Back to Main App</a></li>
         </ul>
+        <hr>
+        <h2>Manual API Test</h2>
+        <button onclick="testCreateRoom()">Test Create Room API</button>
+        <div id="result"></div>
+        <script>
+        function testCreateRoom() {
+            fetch('/api/rooms', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name: 'Manual Test Room', type: 'vegetative', description: 'Created from debug menu'})
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = 'Result: ' + JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = 'Error: ' + error;
+            });
+        }
+        </script>
     </body>
     </html>
     '''
@@ -228,6 +249,29 @@ def debug_list_rooms():
     except Exception as e:
         logger.error(f"Debug list rooms error: {e}")
         return jsonify({'rooms': [], 'error': str(e)})
+
+@app.route('/debug/test-db')
+def debug_test_db():
+    """Test database connection"""
+    logger.info("Testing database connection")
+    if controller is None:
+        return jsonify({'error': 'Controller not initialized'})
+    
+    try:
+        # Test database connection
+        db = controller.db
+        with db.get_connection() as conn:
+            result = conn.execute('SELECT COUNT(*) as count FROM rooms').fetchone()
+            room_count = result['count']
+        
+        return jsonify({
+            'database_connected': True,
+            'room_count': room_count,
+            'database_path': db.db_path
+        })
+    except Exception as e:
+        logger.error(f"Database test error: {e}")
+        return jsonify({'database_connected': False, 'error': str(e)})
 
 @socketio.on('connect')
 def handle_connect():
