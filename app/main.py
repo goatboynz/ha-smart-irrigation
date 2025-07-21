@@ -74,45 +74,21 @@ def health():
     logger.info("Health check accessed")
     return {'status': 'ok', 'service': 'Smart Irrigation Controller', 'timestamp': datetime.now().isoformat()}
 
-@app.route('/test')
-def test():
-    """Simple test endpoint"""
-    logger.info("Test route accessed")
-    return "<h1>Flask is working!</h1><p>If you see this, the Flask app is running correctly.</p>"
-
-@app.route('/test-js')
-def test_js():
-    """Test JavaScript functionality"""
+@app.route('/debug')
+def debug_menu():
+    """Debug menu for troubleshooting"""
     return '''
     <!DOCTYPE html>
     <html>
-    <head><title>JS Test</title></head>
+    <head><title>Debug Menu</title></head>
     <body>
-        <h1>JavaScript Test</h1>
-        <button onclick="testSaveRoom()">Test Save Room Function</button>
-        <div id="result"></div>
-        <script>
-            function testSaveRoom() {
-                console.log('Test button clicked');
-                document.getElementById('result').innerHTML = 'Test function called!';
-                
-                // Test fetch to API
-                fetch('/api/rooms', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({name: 'Test Room', type: 'vegetative', description: 'Test'})
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('API Response:', data);
-                    document.getElementById('result').innerHTML += '<br>API Response: ' + JSON.stringify(data);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('result').innerHTML += '<br>Error: ' + error;
-                });
-            }
-        </script>
+        <h1>Smart Irrigation Debug Menu</h1>
+        <ul>
+            <li><a href="/debug/create-test-room">Create Test Room</a></li>
+            <li><a href="/debug/list-rooms">List All Rooms</a></li>
+            <li><a href="/health">Health Check</a></li>
+            <li><a href="/">Back to Main App</a></li>
+        </ul>
     </body>
     </html>
     '''

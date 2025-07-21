@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.4] - 2025-01-21
+
+### Cleaned Up Production Version
+- **REMOVED ALL DEBUG ALERTS**: No more popup alerts when clicking Save Room
+- **Cleaned JavaScript**: Removed excessive console logging and debug functions
+- **Streamlined UI**: Removed debug buttons from main interface
+- **Added Debug Menu**: Clean debug interface accessible via navbar link
+- **Production Ready**: Core functionality now works without debug interference
+
+### UI Improvements
+- Removed "Button clicked!" alert from Save Room button
+- Removed test buttons from dashboard manual control section
+- Added professional debug menu accessible from navbar
+- Cleaned up saveRoom function for production use
+- Simplified JavaScript initialization
+
+### Debug Access
+- Added /debug endpoint with clean menu interface
+- Debug menu accessible via navbar "Debug" link
+- Preserved essential debug endpoints for troubleshooting
+- Clean separation between production UI and debug tools
+
 ## [1.1.3] - 2025-01-21
 
 ### Fixed

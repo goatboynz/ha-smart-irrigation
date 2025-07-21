@@ -9,30 +9,13 @@ let zones = [];
 let schedules = [];
 let entities = [];
 
-// Test JavaScript function
-function testJavaScript() {
-    console.log('testJavaScript called');
-    alert('JavaScript is working! Check console for more details.');
-    
-    // Test API call
-    fetch('/api/rooms')
-        .then(response => response.json())
-        .then(data => {
-            console.log('API test result:', data);
-            showAlert('API test successful - check console', 'success');
-        })
-        .catch(error => {
-            console.error('API test error:', error);
-            showAlert('API test failed - check console', 'danger');
-        });
-}
+
 
 // Make functions globally available
 window.saveRoom = saveRoom;
 window.saveZone = saveZone;
 window.saveSchedule = saveSchedule;
 window.manualWater = manualWater;
-window.testJavaScript = testJavaScript;
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -41,47 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupSocketListeners();
     setupEventListeners();
     
-    // Test if saveRoom function is available
-    if (typeof saveRoom === 'function') {
-        console.log('saveRoom function is available');
-    } else {
-        console.error('saveRoom function is NOT available');
-    }
-    
-    // Test API connectivity
-    fetch('/api/rooms')
-        .then(response => response.json())
-        .then(data => {
-            console.log('Initial API test successful:', data);
-        })
-        .catch(error => {
-            console.error('Initial API test failed:', error);
-        });
-    
-    // Add debug test function
-    window.testAddRoomDirect = function() {
-        console.log('Testing Add Room API directly');
-        fetch('/api/rooms', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({name: 'Debug Test Room', type: 'vegetative', description: 'Test room from debug'})
-        })
-        .then(response => {
-            console.log('API Response status:', response.status);
-            return response.json();
-        })
-        .then(data => {
-            console.log('API Response data:', data);
-            alert('API Response: ' + JSON.stringify(data));
-            if (data.success) {
-                loadRooms(); // Reload rooms if successful
-            }
-        })
-        .catch(error => {
-            console.error('API Error:', error);
-            alert('API Error: ' + error);
-        });
-    };
+
 });
 
 // Socket.IO event listeners
@@ -465,13 +408,9 @@ function updateManualControlOptions() {
 
 // Save room
 async function saveRoom() {
-    console.log('saveRoom function called');
-    
     const name = document.getElementById('roomName').value;
     const type = document.getElementById('roomType').value;
     const description = document.getElementById('roomDescription').value;
-
-    console.log('Form values:', { name, type, description });
 
     if (!name) {
         showAlert('Please enter a room name', 'warning');
@@ -479,7 +418,6 @@ async function saveRoom() {
     }
 
     try {
-        console.log('Sending request to /api/rooms');
         const response = await fetch('/api/rooms', {
             method: 'POST',
             headers: {
@@ -492,9 +430,7 @@ async function saveRoom() {
             })
         });
 
-        console.log('Response status:', response.status);
         const result = await response.json();
-        console.log('Response result:', result);
         
         if (result.success) {
             showAlert('Room created successfully', 'success');

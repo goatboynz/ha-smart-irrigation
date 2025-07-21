@@ -16,6 +16,9 @@
                 Smart Irrigation Controller
             </a>
             <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/debug" target="_blank">
+                    <i class="fas fa-bug me-1"></i>Debug
+                </a>
                 <span class="navbar-text" id="system-status">
                     <i class="fas fa-circle text-success me-1"></i>
                     System Active
@@ -160,12 +163,7 @@
                                     <i class="fas fa-play me-1"></i>Start Watering
                                 </button>
                                 <hr>
-                                <button class="btn btn-warning w-100 mt-2" onclick="testJavaScript()">
-                                    <i class="fas fa-bug me-1"></i>Test JavaScript
-                                </button>
-                                <button class="btn btn-info w-100 mt-2" onclick="testAddRoomDirect()">
-                                    <i class="fas fa-plus me-1"></i>Test Add Room API
-                                </button>
+
                             </div>
                         </div>
                     </div>
@@ -242,8 +240,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-success" onclick="console.log('Save Room button clicked'); alert('Button clicked!'); saveRoom();">Save Room</button>
-                    <button type="button" class="btn btn-info" onclick="alert('Test button works!');">Test</button>
+                    <button type="button" class="btn btn-success" onclick="saveRoom()">Save Room</button>
                 </div>
             </div>
         </div>
