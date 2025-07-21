@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2025-01-21
+
+### Fixed
+- Added comprehensive JavaScript debugging for "Add Room" issue
+- Added test endpoints for debugging API connectivity
+- Added global function declarations to ensure onclick handlers work
+- Added JavaScript test button to verify functionality
+- Added inline button click logging for debugging
+- Enhanced error handling and logging throughout
+
+### Debug Features Added
+- `/test-js` endpoint for JavaScript functionality testing
+- `/debug/create-test-room` endpoint for direct room creation testing
+- Test JavaScript button on dashboard
+- Enhanced console logging for API calls
+- Global function availability testing
+
+### JavaScript Improvements
+- Made all functions globally available via window object
+- Added initial API connectivity test on page load
+- Enhanced saveRoom function with detailed logging
+- Added test button in room modal for debugging
+
 ## [1.1.0] - 2025-01-21 - MAJOR DATABASE UPGRADE
 
 ### 🗄️ NEW: SQLite Database Implementation

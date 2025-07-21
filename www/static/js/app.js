@@ -9,6 +9,31 @@ let zones = [];
 let schedules = [];
 let entities = [];
 
+// Test JavaScript function
+function testJavaScript() {
+    console.log('testJavaScript called');
+    alert('JavaScript is working! Check console for more details.');
+    
+    // Test API call
+    fetch('/api/rooms')
+        .then(response => response.json())
+        .then(data => {
+            console.log('API test result:', data);
+            showAlert('API test successful - check console', 'success');
+        })
+        .catch(error => {
+            console.error('API test error:', error);
+            showAlert('API test failed - check console', 'danger');
+        });
+}
+
+// Make functions globally available
+window.saveRoom = saveRoom;
+window.saveZone = saveZone;
+window.saveSchedule = saveSchedule;
+window.manualWater = manualWater;
+window.testJavaScript = testJavaScript;
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Smart Irrigation Controller JavaScript loaded');
@@ -22,6 +47,16 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.error('saveRoom function is NOT available');
     }
+    
+    // Test API connectivity
+    fetch('/api/rooms')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Initial API test successful:', data);
+        })
+        .catch(error => {
+            console.error('Initial API test failed:', error);
+        });
 });
 
 // Socket.IO event listeners

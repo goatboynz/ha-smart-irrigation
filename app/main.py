@@ -71,6 +71,35 @@ def test():
     logger.info("Test route accessed")
     return "<h1>Flask is working!</h1><p>If you see this, the Flask app is running correctly.</p>"
 
+@app.route('/test-js')
+def test_js():
+    """Test JavaScript functionality"""
+    return '''
+    <html>
+    <head><title>JavaScript Test</title></head>
+    <body>
+        <h1>JavaScript Test</h1>
+        <button onclick="testFunction()">Test Button</button>
+        <div id="result"></div>
+        <script>
+            function testFunction() {
+                document.getElementById('result').innerHTML = 'JavaScript is working!';
+                fetch('/api/rooms')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('API test:', data);
+                        document.getElementById('result').innerHTML += '<br>API call successful: ' + JSON.stringify(data);
+                    })
+                    .catch(error => {
+                        console.error('API test failed:', error);
+                        document.getElementById('result').innerHTML += '<br>API call failed: ' + error;
+                    });
+            }
+        </script>
+    </body>
+    </html>
+    '''
+
 @app.route('/api/rooms', methods=['GET'])
 def get_rooms():
     """Get all configured rooms"""
@@ -95,6 +124,27 @@ def create_room():
         return jsonify(result)
     except Exception as e:
         logger.error(f"Error creating room: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/debug/create-test-room')
+def debug_create_test_room():
+    """Debug endpoint to test room creation"""
+    logger.info("Debug create test room called")
+    if controller is None:
+        return jsonify({'success': False, 'error': 'Controller not initialized'})
+    
+    test_data = {
+        'name': 'Test Room',
+        'type': 'vegetative',
+        'description': 'Debug test room'
+    }
+    
+    try:
+        result = controller.create_room(test_data)
+        logger.info(f"Debug room creation result: {result}")
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Debug room creation error: {e}")
         return jsonify({'success': False, 'error': str(e)})
 
 @app.route('/api/rooms/<room_id>', methods=['PUT'])
